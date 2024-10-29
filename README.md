@@ -2,98 +2,168 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# NestJS Task Management API
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A RESTful API built with NestJS for managing tasks with user authentication and PostgreSQL database.
 
-## Description
+## Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- User authentication with JWT
+- CRUD operations for tasks
+- Task filtering and search
+- PostgreSQL database integration
+- Docker support for development and production
+- Environment-based configuration
 
-## Project setup
+## Prerequisites
+
+- Node.js (v16 or higher)
+- Docker and Docker Compose
+- PostgreSQL (if running locally)
+
+## Environment Setup
+
+Create the following environment files in the root directory:
+
+### `.env.development`
+
+```bash
+NODE_ENV=development
+PORT=3000
+DB_HOST=postgres
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_DATABASE=task-management
+JWT_SECRET=your_development_secret
+JWT_EXPIRES_IN=3600
+```
+
+### `.env.production`
+
+```bash
+NODE_ENV=production
+PORT=3000
+DB_HOST=postgres
+DB_PORT=5432
+DB_USERNAME=your_prod_username
+DB_PASSWORD=your_prod_password
+DB_DATABASE=your_prod_database
+JWT_SECRET=your_production_secret
+JWT_EXPIRES_IN=3600
+```
+
+## Installation
+
+1. Clone the repository
+2. Install dependencies:
 
 ```bash
 $ npm install
 ```
 
-## Compile and run the project
+## Running with Docker
+
+### Development Mode
 
 ```bash
-# development
-$ npm run start
+# Build and start development containers
+$ npm run podman:dev:build
 
-# watch mode
+# Start existing containers
+$ npm run podman:dev
+```
+
+### Production Mode
+
+```bash
+# Build and start production containers
+$ npm run podman:prod:build
+
+# Start existing containers
+$ npm run podman:prod
+```
+
+## Running Locally
+
+```bash
+# Development mode
 $ npm run start:dev
 
-# production mode
+# Production mode
 $ npm run start:prod
 ```
 
-## Run tests
+## API Endpoints
+
+### Authentication
+
+- `POST /auth/signup` - Register a new user
+- `POST /auth/signin` - Login and receive JWT token
+
+### Tasks
+
+- `GET /tasks` - Get all tasks (with optional filters)
+- `GET /tasks/:id` - Get a specific task
+- `POST /tasks` - Create a new task
+- `PATCH /tasks/:id/status` - Update task status
+- `DELETE /tasks/:id` - Delete a task
+
+## Testing
 
 ```bash
-# unit tests
+# Unit tests
 $ npm run test
 
-# e2e tests
+# E2E tests
 $ npm run test:e2e
 
-# test coverage
+# Test coverage
 $ npm run test:cov
 ```
 
-## Deployment
+## Docker Configuration
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+The application includes two Docker configurations:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Development (Dockerfile.dev)
 
-```bash
-$ npm install -g mau
-$ mau deploy
+- Hot-reloading enabled
+- Volume mounting for live code updates
+- Development dependencies included
+
+### Production (Dockerfile)
+
+- Multi-stage build process
+- PM2 process manager for clustering
+- Only production dependencies included
+- Optimized for performance
+
+## Database
+
+The application uses PostgreSQL with TypeORM. Database configuration can be found in:
+
+```typescript:src/config/configuration.ts
+startLine: 1
+endLine: 17
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Project Structure
 
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- `src/auth` - Authentication related files
+- `src/tasks` - Task management functionality
+- `src/config` - Configuration and environment setup
+- `src/transform.interceptor.ts` - Response transformation
 
 ## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+For questions and support, please open an issue in the repository.
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is MIT licensed.
+
+```
+
+This README now better reflects your actual implementation, including the Docker setup, environment configuration, and specific features of your task management application. I've referenced the actual configuration files and structure from your codebase while providing clear instructions for setup and usage.
+```

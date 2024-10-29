@@ -1,23 +1,27 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TasksModule } from './tasks/tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
 import { AuthModule } from './auth/auth.module';
+import configuration from './config/configuration';
+import { configValidationSchema } from './config/config.schema';
 
 @Module({
   imports: [
-    TasksModule,
-    AuthModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5433,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'task-management',
-      autoLoadEntities: true,
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [`.env.${process.env.NODE_ENV}`],
+      load: [configuration],
+      validationSchema: configValidationSchema,
     }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        ...configService.get('database'),
+      }),
+      inject: [ConfigService],
+    }),
+    TasksModule,
     AuthModule,
   ],
   controllers: [],
